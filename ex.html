@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>NodeJS Private Chat App</title>
+	
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	
+	<script>
+	var uname="";
+	var flag=0;
+	var socket = io.connect('http://localhost:8081');
+	socket.on('connect', function(){
+		socket.emit('getuname');
+		socket.emit('listusers');
+	});
+	socket.on('updatechat', function (username, data) {
+		$('#conversation').append('<p class="well">'+username + ': ' + data+ '</p>');
+		$('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+		socket.emit('listusers');
+	});
+
+	socket.on('updatelink', function (username, data) {
+		$('#conversation').append('<p class="well">'+username + ': ' + '<a href="'+data+'">'+data+'</a>' + '</p>');
+		$('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+	});
+
+
+	socket.on('updateboard', function (username, data) {
+		$('#conversation').append('<p class="well">'+'**Collaborative White Board has started**');
+		$('#conversation').append('<p class="well">'+'<a href="http://192.168.1.107:8081/white_board" target="_blank">Join</a>');
+		$('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+	});
+
+
+	socket.on('start', function (name){
+
+		if(flag==0){
+			document.getElementById('usern').value = name;
+			uname=name;
+			flag=1;
+			}
+	});
+	socket.on('getusers', function(list){
+
+		document.getElementById("list_of_users").innerHTML = "";
+		var str='<br>';
+
+		for(var i=0;i<list.length;i++){
+
+			str+='<a onclick="func('+list[i]+')" href = "#" >'+list[i]+'</a>';
+			str+='<br>';
+
+		}
+
+		str+='<br>';
+
+		$('#list_of_users').append(str);
+	});
+
+
+	socket.on('roomcreated', function(room){
+		//uname = $('#create_room_email').val();
+		//document.getElementById('usern').value = uname;
+		display_all();
+		socket.emit('adduser', uname, room);
+		$('#create_room_email').val("");
+	});
+
+	socket.on('givealert', function(none){
+
+		alert('Please enter a chatroom!');
+	});
+
+	socket.on('alertuser', function(name, sender){
+
+
+		alert('erjewr');
+		if(name==uname){
+
+			alert(sender);
+		}
+	});
+
+	function func(name){
+
+
+
+		socket.emit("alertuser", name, uname);
+	}
+
+	function display_all(){
+
+		document.getElementById('data').type='text';
+		document.getElementById('filename').type='file';
+		document.getElementById('uploadbutton').type='submit';
+		document.getElementById('datasend').type='button';
+		document.getElementById('datasend').style.display='block';
+		document.getElementById('convo').style.display='block';
+		document.getElementById('header').style.display='none'
+		document.getElementById('tabbedpane').style.display='none'
+
+	}
+	
+
+	$(function(){
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			socket.emit('sendchat', message);
+			$('#data').focus();
+		});
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+				$('#data').focus();
+			}
+		});
+		$('#join').on('click', function(e){
+			e.preventDefault();
+			if(($('#join_room_email').val() !== "") && ($('#join_room_code').val() !== "")){
+				//uname = $('#create_room_email').val();
+				
+				display_all();
+				socket.emit('adduser', $('#usern').val(), $('#join_room_code').val());
+				$('#join_room_email').val("");
+				$('#join_room_code').val("");
+			}else{
+				alert("Name & Code!! Please enter it. Don't be a noob. It just has basic validations.");
+			}
+		});
+		$('#create').on('click', function(e){
+			e.preventDefault();
+			if($('#create_room_email').val() !== ""){
+				socket.emit('createroom');
+
+			}else{
+				alert("Name!! Please enter it. Don't be a noob. It just has basic validations.");
+			}
+		});
+	});
+</script>
+</head>
+<body style="padding:20px 0 0 0;">
+
+	<div class="container">
+		<div class="row" id = 'header'>
+			<div class="col-lg-64">
+				<div class="jumbotron">
+					<h1>Welcome! Join or create a room</h1>
+					<p>
+						
+					</p>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div>
+				<div style="display: none; height:400px" id="convo">
+					<a href="http://192.168.1.107:8081/white_board" target="_blank" id='whiteboard'>Open White Board</a>
+					<div id="conversation" style='height:400px'></div>
+					
+				</div>
+
+				<div class="input-group">
+					<input id="data" type="hidden" class="form-control" placeholder="Type your message here">
+					<span class="input-group-btn">
+						<div id='sendbutton' style='display:none'>
+						
+						<button class="btn btn-primary" id="datasend" type="button">Send!</button>
+						</div>
+						<form action="http://192.168.1.107:8081/file_upload" method="POST" enctype="multipart/form-data">
+							<input class="btn btn-primary" type="hidden" name="file" id='filename'></input>
+							<input class="btn btn-primary" type="hidden" value="Upload File" id='uploadbutton'>Upload</input>
+							<input type="hidden" id="usern" value="" name="usern">
+							</form>	
+					</span>
+
+					
+
+				</div>
+
+				<div class="clearfix"></div>
+			</div>
+			<div class="col-lg-4">
+				<div role="tabpanel" id='tabbedpane'>
+					<!-- Nav tabs -->
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active">
+							<a href="#home" aria-controls="home" role="tab" data-toggle="tab">Join Room</a>
+						</li>
+						<li role="presentation">
+							<a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Create Room</a>
+						</li>
+					</ul>
+
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="home">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Your Name</label>
+								<input type="text" class="form-control" id="join_room_email" placeholder="Enter Name"/>
+							</div>
+							<div class="form-group">
+								<label for="exampleInputEmail1">Room Code</label>
+								<input type="email" class="form-control" id="join_room_code" placeholder="Enter Room Code"/>
+							</div>
+							<button type="submit" id="join" class="btn btn-default">Submit</button>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="profile">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Your Name</label>
+								<input type="text" class="form-control" id="create_room_email" placeholder="Enter Name"/>
+							</div>
+							<button type="submit" id="create" class="btn btn-default">Submit</button>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<p style='margin-left:50px; margin-top:50px'>Users Online</p>
+	<div id='list_of_users' style='margin-left:50px;' ></div>
+
+
+<style>
+	.col-lg-8 .input-group {
+	    margin: 0 0 20px 0;
+	}
+	#conversation p {
+	    margin: 5px;
+	    padding: 5px 10px;
+	}
+	#conversation {
+	    height: 200px;
+	    overflow: auto;
+	    margin: 0 0 20px 0;
+	}
+	</style>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>NodeJS Private Chat App</title>
+	
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	
+	<script>
+	var uname="";
+	var socket = io.connect('http://localhost:8081');
+	socket.on('connect', function(){
+	});
+	socket.on('updatechat', function (username, data) {
+		$('#conversation').append('<p class="well">'+username + ': ' + data+ '</p>');
+		$('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+	});
+
+	socket.on('updatelink', function (username, data) {
+		$('#conversation').append('<p class="well">'+username + ': ' + '<a href="'+data+'">'+data+'</a>' + '</p>');
+		$('#conversation').scrollTop($('#conversation')[0].scrollHeight);
+	});
+
+
+	socket.on('roomcreated', function(room){
+		uname = $('#create_room_email').val();
+		document.getElementById('usern').value = uname;
+		socket.emit('adduser', $('#create_room_email').val(), room);
+		$('#create_room_email').val("");
+	});
+
+	socket.on('givealert', function(none){
+
+		alert('Please enter a chatroom!');
+	});
+	
+
+	$(function(){
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			socket.emit('sendchat', message);
+			$('#data').focus();
+		});
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+				$('#data').focus();
+			}
+		});
+		$('#join').on('click', function(e){
+			e.preventDefault();
+			if(($('#join_room_email').val() !== "") && ($('#join_room_code').val() !== "")){
+				uname = $('#create_room_email').val();
+				document.getElementById('usern').value = uname;
+				socket.emit('adduser', $('#join_room_email').val(), $('#join_room_code').val());
+				$('#join_room_email').val("");
+				$('#join_room_code').val("");
+			}else{
+				alert("Name & Code!! Please enter it. Don't be a noob. It just has basic validations.");
+			}
+		});
+		$('#create').on('click', function(e){
+			e.preventDefault();
+			if($('#create_room_email').val() !== ""){
+				socket.emit('createroom');
+			}else{
+				alert("Name!! Please enter it. Don't be a noob. It just has basic validations.");
+			}
+		});
+	});
+</script>
+</head>
+
+
+
+
+<body style="padding:20px 0 0 0;">
+
+
+
+	<div class="container">
+
+		<div class="col-lg-4" >
+				<div role="tabpanel">
+					<!-- Nav tabs -->
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active">
+							<a href="#home" aria-controls="home" role="tab" data-toggle="tab">Join Room</a>
+						</li>
+						<li role="presentation">
+							<a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Create Room</a>
+						</li>
+					</ul>
+
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="home">
+						
+							<!--
+							<div class="form-group">
+								<label for="exampleInputEmail1">Your Name</label>
+								<input type="text" class="form-control" id="join_room_email" placeholder="Enter Name"/>
+							</div>
+							-->
+							<div class="form-group">
+								<label for="exampleInputEmail1">Room Code</label>
+								<input type="email" class="form-control" id="join_room_code" placeholder="Enter Room Code"/>
+							</div>
+							<button type="submit" id="join" class="btn btn-default">Submit</button>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="profile">
+							
+							<div class="form-group">
+								<label for="exampleInputEmail1">Enter a room name</label>
+								<input type="text" class="form-control" id="create_room_email" placeholder="Enter Name"/>
+							</div>
+							
+							<button type="submit" id="create" class="btn btn-default">Submit</button>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+
+				</div>
+		</div>
+
+
+
+<style>
+	.col-lg-8 .input-group {
+	    margin: 0 0 20px 0;
+	}
+	#conversation p {
+	    margin: 5px;
+	    padding: 5px 10px;
+	}
+	#conversation {
+	    height: 200px;
+	    overflow: auto;
+	    margin: 0 0 20px 0;
+	}
+	</style>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<html>
+
+<head>
+<title>Sign Up</title>
+
+<script>
+	
+	var socket = io.connect('http://localhost:8081');
+	//validate
+	
+	$(function(){
+		$('#go').click(function(){
+
+			alert('opyeah');
+			if($('#password').val()==$('#confirm').val())
+				socket.emit('validate', $('#username').val(), $('#number').val(), $('#email').val(), $('#password').val());
+			});
+		});
+
+
+
+	</script>
+</head>
+
+<body>
+	
+
+		
+		Name<input type="text" name="username" id ="username"><br>
+		Email<input type="email" name="email" id="email"><br>
+		Password<input type="password" name="password" id="password"><br>
+		Confirm Password<input type="password" name="confirm" id="confirm"><br>
+		<hr>
+		<button type="button" id="go">Sign Up!</button>
+	
+	</form>
+
+
+</body>
+</html>

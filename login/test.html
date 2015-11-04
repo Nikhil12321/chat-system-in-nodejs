@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>LIGHTBOX EXAMPLE</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <style>
+        .black_overlay{
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index:1001;
+            -moz-opacity: 0.8;
+            opacity:.80;
+            filter: alpha(opacity=80);
+        }
+        .white_content {
+            display: none;
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            padding: 16px;
+            border: 16px solid orange;
+            background-color: white;
+            z-index:1002;
+            overflow: auto;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $(.base).click(function(){
+                $("#light").fadeOut("med", 0);
+            });
+            $(.lightbox).click(function(){
+                $("#light").fadeIn("med",100);
+            });
+        });
+    </script>
+    </head>
+    <body>
+
+        <p>This is the main content. To display a lightbox click <a class = "base" >here</a></p>
+
+        <div id="light" class="white_content">This is the lightbox content. <a class = "lightbox">Close</a></div>
+
+        <div id="fade" class="black_overlay"></div>
+
+    </body>
+
+</html>

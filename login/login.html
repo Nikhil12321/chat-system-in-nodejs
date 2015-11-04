@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login/SignUp</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+ 	<link rel="stylesheet" href="/home/nikhil/project/files/bootstrap.min.css">
+	<script src="jquery/1.11.13/jquery-1.11.3.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap-filestyle.min.js"> </script>
+	<style type="text/css">
+		input {
+			width: 55%; !important
+			margin-left: 15%;
+		}
+		.btn-file {
+		    position: relative;
+		    overflow: hidden;
+		    background: rgb(80,135,52);
+		    color: rgb(255,255,255);
+		}
+		.btn-file input[type=file] {
+		    position: absolute;
+		    top: 0;
+		    right: 0;
+		    min-width: 100%;
+		    min-height: 100%;
+		    font-size: 100px;
+		    text-align: right;
+		    filter: alpha(opacity=0);
+		    opacity: 0;
+		    outline: none;
+		    background: rgb(70,98,139);
+		    cursor: inherit;
+		    display: block;
+		}
+	</style>
+</head>
+<body class = "container" style = "width:50%; background-color: #F9EEFD;">
+	<div>
+		<div>
+			<ul class = "nav nav-pills" role = "tablist" id = "myTabs">
+				<li class = "active"><a href="#registration">Registration</a></li>
+				<li><a href="#login">Login</a></li>
+			</ul>
+		</div>
+		<div id="my-tab-content" class="tab-content">
+			<div id = "registration" class = "tab-pane active">
+				<h3>New user? Register yourself</h3><br><br>
+					<form action='/signup' method="POST">
+						<label>UserName</label>
+							<input type = "text" name="username" class = "form-control"><br>
+
+						<label>Password</label>
+							<input type = "password" name="password" class = "form-control"><br>
+
+						<label>Re-type Password</label>
+							<input type = "password" name="confirm" class = "form-control"><br>					
+						<label>Email Id</label>
+							<input type = "text" name="email" class = "form-control"><br><br>
+						<div class = "well">
+							<span class="btn btn-default btn-file">
+	    						Browse <input type="file">
+							</span>
+								
+						</div>
+
+						<input type = "submit" value = "Register" class = "btn btn-primary" style = "float:right">
+					</form>
+			</div>
+
+			<div id = "login" class = "tab-pane">
+				<h3>Welcome Back. Please login by entering the following credentials</h3><br><br>
+				<form action="/validate" method="POST">
+					<label>Username</label>
+						<input type = "text" name="username" class = "form-control"><br>
+					<label>Password</label>
+						<input type = "password" name="password" class = "form-control"><br><br>
+					
+					<input type="submit">
+				</form>
+			</div>
+		</div>
+	</div>	
+
+	<script type="text/javascript">
+	$('#myTabs a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	});
+
+	</script>
+</body>
+</html>
