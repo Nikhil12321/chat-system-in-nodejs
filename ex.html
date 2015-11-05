@@ -11,8 +11,9 @@
 	
 	<script>
 	var uname="";
+	//get the username only once
 	var flag=0;
-	var socket = io.connect('http://localhost:8081');
+	var socket = io.connect('http://192.168.1.107:8081');
 	socket.on('connect', function(){
 		socket.emit('getuname');
 		socket.emit('listusers');
@@ -44,6 +45,8 @@
 			flag=1;
 			}
 	});
+
+
 	socket.on('getusers', function(list){
 
 		document.getElementById("list_of_users").innerHTML = "";
@@ -51,7 +54,7 @@
 
 		for(var i=0;i<list.length;i++){
 
-			str+='<a onclick="func('+list[i]+')" href = "#" >'+list[i]+'</a>';
+			str+='<a href="#" onclick="func('+list[i]+')" >'+list[i]+'</a>';
 			str+='<br>';
 
 		}
@@ -81,12 +84,11 @@
 		alert('erjewr');
 		if(name==uname){
 
-			alert(sender);
+			//alert(sender);
 		}
 	});
 
 	function func(name){
-
 
 
 		socket.emit("alertuser", name, uname);
@@ -108,10 +110,13 @@
 
 	$(function(){
 		$('#datasend').click( function() {
+
 			var message = $('#data').val();
-			$('#data').val('');
-			socket.emit('sendchat', message);
-			$('#data').focus();
+			if(message!=""){
+				$('#data').val('');
+				socket.emit('sendchat', message);
+				$('#data').focus();
+			}
 		});
 		$('#data').keypress(function(e) {
 			if(e.which == 13) {
