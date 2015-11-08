@@ -25,7 +25,7 @@ app.use(multer({dest:'/home/nikhil/project/files'}).single('file'));
 
 http.listen(8081);
 // routing
-app.get('/', function (req, res) {
+app.get('/chat', function (req, res) {
 
 
 

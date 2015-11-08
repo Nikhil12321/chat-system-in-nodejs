@@ -46,7 +46,7 @@ app.get('/login', function(req, res){
 
 
   console.log('trying');
-  res.sendFile('/home/nikhil/project/login/login.html');
+  res.sendFile('/home/nikhil/project/login.html');
 });
 
 app.get('/display', function(req, res){
