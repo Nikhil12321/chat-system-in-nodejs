@@ -23,3 +23,9 @@ HOW TO RUN?
 
 --> If you have installed NODE.JS and MongoDB then execture copy.js from the command line.
 --> Open the application in any browser on your network by writing your ip:8081/login. Example: 192.168.1.2:8081/login
+
+
+THE PROJECT USES THE FOLLOWING MODULES:
+
+1. Socket.io (http://socket.io/) for handling communications
+2. Multer (https://github.com/expressjs/multer) for handling multipart data that is images and multimedia
